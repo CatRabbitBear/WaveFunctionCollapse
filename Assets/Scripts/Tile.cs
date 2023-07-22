@@ -1,8 +1,10 @@
 using System;
-// using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+
 // using System.Linq;
-// using UnityEngine;
+
 
 public class Tile : IComparable<Tile>
 {
@@ -21,7 +23,7 @@ public class Tile : IComparable<Tile>
     public List<int> TrueConnections = new List<int>();
     // Once a tile is placed, a ref to the PrefabPrefabPlaceholder is maintained
     // Which currently stores a string of the prefab needed and how it should be rotated.
-    public PrefabPlaceholder Placeholder;
+    public PrefabAdapter Adapter;
 
     public Tile(int r, int c) // parameters int row, int column
     {
@@ -71,16 +73,16 @@ public class Tile : IComparable<Tile>
 // that will bridge the gap between Unity prefabs and the 2d grid of tiles.
 // For now it just holds a string that correlates to a prefab, how much it is rotated by
 // and its rotated connections.
-public class PrefabPlaceholder
+public class PrefabAdapter
 {
     public readonly List<int> Connections;
     public readonly int Rotation;
-    public readonly string PrefabType;
+    public readonly GameObject PrefabType;
 
-    public PrefabPlaceholder(List<int> con, int rot, string prefabType)
+    public PrefabAdapter(List<int> con, int rotation, GameObject prefabType)
     {
         Connections = con;
-        Rotation = rot;
+        Rotation = rotation;
         PrefabType = prefabType;
     }
 

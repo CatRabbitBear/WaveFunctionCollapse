@@ -1,19 +1,30 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MapController : MonoBehaviour
 {
+    public static MapController Instance;
     public WaveFuncCollapse waveFunc;
-    public int gridSize;
-    public int prefabWidth = 3;
+    private int _gridWidth;
+    private int _gridHeight;
+    private int _prefabLength;
     public Tile[,] Grid;
-    public GameObject fourWay;
-    public GameObject threeWay;
-    public GameObject bend;
-    public GameObject straight;
-    public GameObject room;
-    
+    public List<Tile> AllTiles;
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
     // The map (grid) is generated in WaveFuncCollapse script in its Awake method, this
     // means it is guaranteed to be ready to be accessed in this Start method
     //
@@ -22,50 +33,53 @@ public class MapController : MonoBehaviour
     void Start()
     {
         waveFunc = GameObject.Find("WaveFunction").GetComponent<WaveFuncCollapse>();
-        gridSize = waveFunc.gridSize;
-        Grid = waveFunc.Grid;
-        for (int i = 0; i < gridSize; i++)
+        _gridWidth = Tileset.Instance.gridWidth;
+        _gridHeight = Tileset.Instance.gridHeight;
+        _prefabLength = Tileset.Instance.prefabLength;
+        
+        CreateNewGrid();
+        Grid = waveFunc.CreateMap(Grid, AllTiles);
+        CreateMapFromGrid();
+    }
+    
+    void CreateNewGrid()
+    {
+        AllTiles = new List<Tile>();
+        Grid = new Tile[_gridHeight, _gridWidth];
+        for (int i = 0; i < _gridHeight; i++)
         {
-            for (int j = 0; j < gridSize; j++)
+            for (int j = 0; j < _gridWidth; j++)
             {
-                string prefabType = Grid[i,j].Placeholder.PrefabType;
+                Tile newTile = new Tile(i, j);
+                Grid[i, j] = newTile;
+                AllTiles.Add(newTile);
+            }
+        }
+    }
+    
+    void CreateMapFromGrid()
+    {
+        for (int i = 0; i < _gridHeight; i++)
+        {
+            for (int j = 0; j < _gridWidth; j++)
+            {
+                GameObject prefabType = Grid[i,j].Adapter.PrefabType;
                 if (prefabType == null) Debug.Log("prefabType is null!");
                 
                 // Check needed to prevent an attempt to instantiate nothing.
-                if (prefabType == "Empty")
+                if (prefabType.name == "empty")
                 {
                     continue;
                 }
                 else
                 {
-                    GameObject prefab = GetPrefabFromTile(prefabType);
-                    Vector3 prefabPosition = new Vector3((j + 1) * prefabWidth, 0, -(i + 1) * prefabWidth);
-                    Quaternion rotation = Quaternion.Euler(0f, Grid[i, j].Placeholder.Rotation, 0f);
-                    Instantiate(prefab, prefabPosition, rotation );
+                    //GameObject prefab = GetPrefabFromTile(prefabType);
+                    Vector3 prefabPosition = new Vector3((j + 1) * _prefabLength, 0, -(i + 1) * _prefabLength);
+                    Quaternion rotation = Quaternion.Euler(0f, Grid[i, j].Adapter.Rotation, 0f);
+                    Instantiate(prefabType, prefabPosition, rotation );
                 }
             }
         }
     }
-
-    // Eventually this will be replaced by a more robust adapter in the Tile script.
-    // Currently this maps prefabs to strings stored in PrefabPlaceholder instances.
-    GameObject GetPrefabFromTile(string prefabType)
-    {
-        switch (prefabType)
-        {
-            case "Straight":
-                return straight;
-            case "Bend":
-                return bend;
-            case "ThreeWay":
-                return threeWay;
-            case "FourWay":
-                return fourWay;
-            case "Room":
-                return room;
-            default:
-                Debug.Log("Default selected in GetPrefabFromTile");
-                return fourWay;
-        }
-    }
+    
 }
