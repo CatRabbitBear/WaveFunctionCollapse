@@ -71,17 +71,15 @@ public class Tile : IComparable<Tile>
 
 // Below is the start of an adapter class
 // that will bridge the gap between Unity prefabs and the 2d grid of tiles.
-// For now it just holds a string that correlates to a prefab, how much it is rotated by
-// and its rotated connections.
 public class PrefabAdapter
 {
     public readonly List<int> Connections;
     public readonly int Rotation;
     public readonly GameObject PrefabType;
 
-    public PrefabAdapter(List<int> con, int rotation, GameObject prefabType)
+    public PrefabAdapter(List<int> connections, int rotation, GameObject prefabType)
     {
-        Connections = con;
+        Connections = connections;
         Rotation = rotation;
         PrefabType = prefabType;
     }

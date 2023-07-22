@@ -335,8 +335,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de9fca1bce636444b8d15cff4a8c94e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridHeight: 4
-  gridWidth: 8
+  gridHeight: 15
+  gridWidth: 15
   prefabLength: 3
   empty: {fileID: 144808064946280474, guid: 2590bd34638bbc54a9609f4908297836, type: 3}
   room: {fileID: 2904635240170203467, guid: 16269a2e1e147f64ab1845eb06f6972d, type: 3}

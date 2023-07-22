@@ -45,6 +45,7 @@ public class WaveFuncCollapse : MonoBehaviour
     {
         _gridWidth = Tileset.Instance.gridWidth;
         _gridHeight = Tileset.Instance.gridHeight;
+        Tile lastTileCollapsed = null;
         int uncollapsed = 0;
         int safetyNet = 0;
         foreach (var tile in allTiles)
@@ -55,7 +56,15 @@ public class WaveFuncCollapse : MonoBehaviour
         while (uncollapsed > 0)
         {
             safetyNet++;
-            UpdateSignaturesAndIndexes(grid);
+            if (lastTileCollapsed == null)
+            {
+                UpdateSignaturesAndIndexes(grid);
+            }
+            else
+            {
+                UpdateSignaturesAndIndexes(grid, lastTileCollapsed);
+            }
+            // UpdateSignaturesAndIndexes(grid);
             allTiles.Sort();
             Tile nextTile = null;
             foreach (var t in allTiles)
@@ -77,10 +86,14 @@ public class WaveFuncCollapse : MonoBehaviour
                 int possiblesCount = nextTile.PossiblesIndexes.Count;
                 int indexOfNextTile = Random.Range(0, possiblesCount);
                 UpdateTilePlacement(nextTile, TilesetWithRotations[nextTile.PossiblesIndexes[indexOfNextTile]]);
+                lastTileCollapsed = new Tile(nextTile.Row, nextTile.Col);
+                Debug.Log($"{nextTile.Row} : {nextTile.Col}");
             }
             else
             {
                 UpdateTilePlacement(nextTile, TilesetWithRotations[nextTile.PossiblesIndexes[0]]);
+                lastTileCollapsed = new Tile(nextTile.Row, nextTile.Col);
+                Debug.Log($"{nextTile.Row} : {nextTile.Col}");
             }
             int countUncollapsed = 0;
             foreach (var tile in allTiles)
@@ -236,6 +249,14 @@ public class WaveFuncCollapse : MonoBehaviour
         return possibleIndexes;
     }
 
+    void UpdateSingleTileSignatureAndIndex(Tile[,] grid, Tile tile)
+    {
+        tile.ConnectionsNeeded = CalculatePossibilitySignature(tile, grid);
+        List<int> possibleIndexes = CalculatePossibilityIndexes(tile);
+        tile.PossiblesIndexes = possibleIndexes;
+        tile.Possibles = possibleIndexes.Count;
+    }
+
     // Loops through grid and updates what that tile needs as connections 
     // and stores the list of indexes from 'tilesetWithRotations' that satisfy those needs.
     void UpdateSignaturesAndIndexes(Tile[,] grid)
@@ -248,13 +269,43 @@ public class WaveFuncCollapse : MonoBehaviour
                 // Only update if tile in not collapsed
                 if (!currentTile.Collapsed)
                 {
-                    currentTile.ConnectionsNeeded = CalculatePossibilitySignature(currentTile, grid);
-                    List<int> possibleIndexes = CalculatePossibilityIndexes(currentTile);
-                    currentTile.PossiblesIndexes = possibleIndexes;
-                    currentTile.Possibles = possibleIndexes.Count;
+                    UpdateSingleTileSignatureAndIndex(grid, currentTile);
                 }
-
             }
+        }
+    }
+
+    // Overloaded method that takes a Tile as second parameter and only
+    // re-evaluates its neighbours to make algorithm more efficient.
+    void UpdateSignaturesAndIndexes(Tile[,] grid, Tile tile)
+    {
+        if (!tile.Collapsed)
+        {
+            UpdateSingleTileSignatureAndIndex(grid, tile);
+        }
+
+        if (tile.Row > 0)
+        {
+            Tile tileAbove = grid[tile.Row - 1, tile.Col];
+            if (!tileAbove.Collapsed) UpdateSingleTileSignatureAndIndex(grid, tileAbove);
+        }
+
+        if (tile.Row < _gridHeight - 1)
+        {
+            Tile tileBelow = grid[tile.Row + 1, tile.Col];
+            if (!tileBelow.Collapsed) UpdateSingleTileSignatureAndIndex(grid, tileBelow);
+        }
+
+        if (tile.Col > 0)
+        {
+            Tile tileLeft = grid[tile.Row, tile.Col - 1];
+            if (!tileLeft.Collapsed) UpdateSingleTileSignatureAndIndex(grid, tileLeft);
+        }
+
+        if (tile.Col < _gridWidth - 1)
+        {
+            Tile tileRight = grid[tile.Row, tile.Col + 1];
+            if (!tileRight.Collapsed) UpdateSingleTileSignatureAndIndex(grid, tileRight);
         }
     }
 }
