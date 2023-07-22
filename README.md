@@ -14,8 +14,6 @@ The term 'signature' in the code represents its encoding about what connections 
 
 This script implements the wave function collapse algorithm. The key components of this script include:
 
-**CalculateValidRotations()**: Calculates all valid rotations for each tile in the Tileset and stores them in the TilesetWithRotations list.
-
 **CreateMap()**: Executes the wave function collapse algorithm to generate the map by iteratively selecting tiles to fit the grid.
 
 **UpdateTilePlacement()**: Updates a grid tile with the assigned prefab and rotation after collapsing.
@@ -34,6 +32,17 @@ This script is responsible for instantiating the generated map in Unity. It acce
 
 This class represents a single tile in the grid. It stores information about its position, whether it has been collapsed (assigned a prefab), its possible connections, and the true connections after collapsing.
 
-### PrefabPlaceholder in Tile.cs
+### PrefabAdapter in Tile.cs
 
 This class acts as an adapter to bridge the gap between Unity prefabs and the grid tiles. It stores information about the prefab's connections and rotation.
+
+### Tileset.cs
+
+Singleton that is the main place to work on creating a tileset out of prefabs.
+
+**CalculateValidRotations()**: Calculates all valid rotations for each tile in the Tileset and stores them in the tilesetWithRotations list.
+
+## Modyfiying the code for your needs
+All prefabs are handled in the Tileset object. Stick with the convention of using +z as up and +x as right in your prefabs and their footprint should be a square. Update the prefab length variable in the Tileset object to be the same as the your prefabs. There is an 'exempt from generations' List in the Tileset gameobject. Use this if you have prefabs you want to manually place, like rooms, that are excluded from generation otherwise. 
+
+
