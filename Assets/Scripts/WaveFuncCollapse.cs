@@ -16,7 +16,7 @@ public class WaveFuncCollapse : MonoBehaviour
     
     public List<PrefabAdapter> TilesetWithRotations;
 
-    private void Awake()
+    private void Start()
     {
         TilesetWithRotations = Tileset.Instance.tilesetWithRotations;
         
@@ -124,7 +124,7 @@ public class WaveFuncCollapse : MonoBehaviour
     
     // Flags a Tile instance in 2d and 1d Lists as collapsed (prefab assigned)
     // updates fields on Tile with information about prefab.
-    void UpdateTilePlacement(Tile tile, PrefabAdapter adapter)
+    public void UpdateTilePlacement(Tile tile, PrefabAdapter adapter)
     {
         // 'adapter' is a useless name that needs refactoring when adapter is worked on.
         tile.Adapter = adapter;

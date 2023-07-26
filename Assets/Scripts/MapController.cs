@@ -10,6 +10,7 @@ public class MapController : MonoBehaviour
     private int _gridWidth;
     private int _gridHeight;
     private int _prefabLength;
+    private Dictionary<PrefabAdapter, Tuple<int, int>> _presetRooms;
     public Tile[,] Grid;
     public List<Tile> AllTiles;
 
@@ -36,8 +37,14 @@ public class MapController : MonoBehaviour
         _gridWidth = Tileset.Instance.gridWidth;
         _gridHeight = Tileset.Instance.gridHeight;
         _prefabLength = Tileset.Instance.prefabLength;
+        _presetRooms = Tileset.Instance.PresetRooms;
         
         CreateNewGrid();
+        foreach (var kvp in _presetRooms)
+        {
+            var tile = Grid[kvp.Value.Item1, kvp.Value.Item2];
+            waveFunc.UpdateTilePlacement(tile, kvp.Key);
+        }
         Grid = waveFunc.CreateMap(Grid, AllTiles);
         CreateMapFromGrid();
     }

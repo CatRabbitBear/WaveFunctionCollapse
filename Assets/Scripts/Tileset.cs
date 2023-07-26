@@ -23,6 +23,7 @@ public class Tileset : MonoBehaviour
     public GameObject fourWay;
 
     public Dictionary<GameObject, List<int>> SignatureMappingsDict;
+    public Dictionary<PrefabAdapter, Tuple<int, int>> PresetRooms;
     public List<PrefabAdapter> tileset;
     
     // Method 'CalculateValidRotations' works out all valid rotations from original 'tileset' List
@@ -65,6 +66,15 @@ public class Tileset : MonoBehaviour
 
         tilesetWithRotations = new List<PrefabAdapter>();
         CalculateValidRotations();
+
+        // This dictionary should contain PrefabAdpapters for prefabs that are manually placed
+        // the dictionary is iterated over in MapController.cs after grid is created but before wave function collapse takes place.
+        PresetRooms = new Dictionary<PrefabAdapter, Tuple<int, int>>
+        {
+            { new PrefabAdapter(new List<int> { 1, 0, 0, 0 }, 0, room), Tuple.Create(gridHeight-1, 2) },
+            { new PrefabAdapter(new List<int> { 0, 0, 1, 0 }, 180, room), Tuple.Create(0, 4) },
+            { new PrefabAdapter(new List<int> { 0, 1, 0, 0 }, 90, room), Tuple.Create(3, 0) },
+        };
     }
     
     // Method that iterates over a copy of the connections. popping last item and appending it
@@ -106,4 +116,6 @@ public class Tileset : MonoBehaviour
             }
         }
     }
+    
+    
 }
