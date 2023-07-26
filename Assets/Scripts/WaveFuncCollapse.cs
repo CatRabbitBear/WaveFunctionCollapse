@@ -87,13 +87,13 @@ public class WaveFuncCollapse : MonoBehaviour
                 int indexOfNextTile = Random.Range(0, possiblesCount);
                 UpdateTilePlacement(nextTile, TilesetWithRotations[nextTile.PossiblesIndexes[indexOfNextTile]]);
                 lastTileCollapsed = new Tile(nextTile.Row, nextTile.Col);
-                Debug.Log($"{nextTile.Row} : {nextTile.Col}");
+                // Debug.Log($"{nextTile.Row} : {nextTile.Col}");
             }
             else
             {
                 UpdateTilePlacement(nextTile, TilesetWithRotations[nextTile.PossiblesIndexes[0]]);
                 lastTileCollapsed = new Tile(nextTile.Row, nextTile.Col);
-                Debug.Log($"{nextTile.Row} : {nextTile.Col}");
+                // Debug.Log($"{nextTile.Row} : {nextTile.Col}");
             }
             int countUncollapsed = 0;
             foreach (var tile in allTiles)
@@ -109,15 +109,15 @@ public class WaveFuncCollapse : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < _gridHeight; i++)
-        {
-            string rowString = "";
-            for (int j = 0; j < _gridWidth; j++)
-            {
-                rowString += grid[i, j].PrintTrueConnections() + " , ";
-            }
-            Debug.Log(rowString);
-        }
+        // for (int i = 0; i < _gridHeight; i++)
+        // {
+        //     string rowString = "";
+        //     for (int j = 0; j < _gridWidth; j++)
+        //     {
+        //         rowString += grid[i, j].PrintTrueConnections() + " , ";
+        //     }
+        //     Debug.Log(rowString);
+        // }
 
         return grid;
     }

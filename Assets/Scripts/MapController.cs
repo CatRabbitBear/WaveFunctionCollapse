@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using QuikGraph;
 using UnityEngine;
 
 public class MapController : MonoBehaviour
@@ -11,6 +12,7 @@ public class MapController : MonoBehaviour
     private int _gridHeight;
     private int _prefabLength;
     private Dictionary<PrefabAdapter, Tuple<int, int>> _presetRooms;
+    private BidirectionalGraph<Tile, Edge<Tile>> _graph;
     public Tile[,] Grid;
     public List<Tile> AllTiles;
 
@@ -47,6 +49,11 @@ public class MapController : MonoBehaviour
         }
         Grid = waveFunc.CreateMap(Grid, AllTiles);
         CreateMapFromGrid();
+        _graph = new BidirectionalGraph<Tile, Edge<Tile>>();
+        CreateGraphFromGrid();
+        Debug.Log(_graph.EdgeCount);
+        Debug.Log(_graph.VertexCount);
+        Debug.Log(_graph.ToString());
     }
     
     void CreateNewGrid()
@@ -84,6 +91,53 @@ public class MapController : MonoBehaviour
                     Vector3 prefabPosition = new Vector3((j + 1) * _prefabLength, 0, -(i + 1) * _prefabLength);
                     Quaternion rotation = Quaternion.Euler(0f, Grid[i, j].Adapter.Rotation, 0f);
                     Instantiate(prefabType, prefabPosition, rotation );
+                }
+            }
+        }
+    }
+
+    void CreateGraphFromGrid()
+    {
+        for (int i = 0; i < _gridHeight; i++)
+        {
+            for (int j = 0; j < _gridWidth; j++)
+            {
+                Tile currentTile = Grid[i, j];
+
+                // Skip tile if is the 'Empty' prefab
+                if (currentTile.Adapter.PrefabType.name == "Empty") continue;
+                
+                if (!_graph.ContainsVertex(currentTile))
+                {
+                    _graph.AddVertex(currentTile);
+                }
+
+                if (j < _gridWidth - 1)
+                {
+                    Tile rightNeighbour = Grid[i, j + 1];
+                    if (currentTile.TrueConnections[1] == 1 && rightNeighbour.TrueConnections[3] == 1)
+                    {
+                        if (!_graph.ContainsVertex(rightNeighbour))
+                        {
+                            _graph.AddVertex(rightNeighbour);
+                        }
+
+                        _graph.AddEdge(new Edge<Tile>(currentTile, rightNeighbour));
+                    }
+                }
+                
+                if (i < _gridHeight - 1)
+                {
+                    Tile downNeighbour = Grid[i + 1, j];
+                    if (currentTile.TrueConnections[2] == 1 && downNeighbour.TrueConnections[0] == 1)
+                    {
+                        if (!_graph.ContainsVertex(downNeighbour))
+                        {
+                            _graph.AddVertex(downNeighbour);
+                        }
+
+                        _graph.AddEdge(new Edge<Tile>(currentTile, downNeighbour));
+                    }
                 }
             }
         }

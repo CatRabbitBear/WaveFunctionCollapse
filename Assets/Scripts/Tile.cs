@@ -8,6 +8,9 @@ using UnityEngine;
 
 public class Tile : IComparable<Tile>
 {
+    private static int nextId = 0;
+    public int ID;
+    
     // row and col are the grid locations, stored internally so can sort instances in a 1d list
     // and still know what neighbours it has in the 2d grid.
     public readonly int Row;
@@ -37,6 +40,8 @@ public class Tile : IComparable<Tile>
             ConnectionsNeeded.Add(-1);
         }
 
+        ID = nextId;
+        nextId++;
     }
     
     // Debugging string
