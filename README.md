@@ -1,5 +1,7 @@
 # WaveFunctionCollapse
  Simple wave function collapse map generator 3D Unity project.
+ 
+![Screenshot of map generated with wave function collapse](wavefuncscrnsht3.png)
 
 ## TL;DR
 A simple 3D Unity project, with prefabs made from cube primitives as placeholders for more complex rooms. The main algorithm is a barebones wave function collapse, with   no handling of impossible combinations or dead ends. This should be implemented with some exception handling and/or 'rollback' mechanism to revert back to a previous state.
@@ -43,6 +45,16 @@ Singleton that is the main place to work on creating a tileset out of prefabs.
 **CalculateValidRotations()**: Calculates all valid rotations for each tile in the Tileset and stores them in the tilesetWithRotations list.
 
 ## Modyfiying the code for your needs
-All prefabs are handled in the Tileset object. Stick with the convention of using +z as up and +x as right in your prefabs and their footprint should be a square. Update the prefab length variable in the Tileset object to be the same as the your prefabs. There is an 'exempt from generations' List in the Tileset gameobject. Use this if you have prefabs you want to manually place, like rooms, that are excluded from generation otherwise. 
+All prefabs are handled in the Tileset object. Stick with the convention of using +z as up and +x as right in your prefabs and their footprint should be a square. Update the prefab length variable in the Tileset object to be the same as the your prefabs. There is an 'exempt from generations' List in the Tileset gameobject. Use this if you have prefabs you want to manually place, like rooms, that are excluded from generation otherwise. To place prefabs manually, use the PresetRooms dictionary in Tilset.cs, being careful about placement (indexes) and that the rotation matches the signature.
+
+## TODO
+
+The main algorithm is a basic implementation. It needs to be extended to use more complex tiles. It also does the bare minimum of re-evaluating what prefabs can fit on each tile during each pass, this keeps the algorithm fast, but is not sufficient enough for more complex tilesets, which would need to recursively update tile information as tiles collapse. 
+
+A simple graph needs to be implemented also to check if all areas/rooms are reachable. And a strategy to either start over (if map is small) or 'rollback' to a previous state and try a new combination of tiles if the map is large.
+
+The code can be re-factored to make it handle exceptions better and make it more portable as a plug-and-play in another project. The main algorithm is somewhat de-coupled from the tileset but with some goofy side effects that need addressing, like an empty GameObject being present to represent a lack of prefab.
+
+
 
 
